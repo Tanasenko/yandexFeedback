@@ -1,7 +1,15 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 .balloon{
     display: flex;
     flex-direction: column;
     max-width: 353px;
+    min-height: 150px;
+    padding-bottom: 5px;
 }
 
 .reviews{
@@ -11,6 +19,7 @@
 
 .review{
     margin-bottom: 20px;
+    
 }
 
 .title{

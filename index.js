@@ -22,20 +22,30 @@ ymaps.ready(init);
         };
 
         var addButton = document.querySelector('.addButton');
-        var nameInput = document.querySelector('.name');
-        var placeInput = document.querySelector('.place');
-        var commentInput = document.querySelector('.comment');
-        
+
 
         myMap.events.add('click', function(e) {
             var coord = e.get('coords');
-            coords.coord = coord;
+            coords.coord += [coord];
             myMap.geoObjects.add(new ymaps.Placemark((coord), myBallon));
-            addButton.addEventListener('click', function(){
-                var review = document.createElement('div');
-                review.classList.add = 'review';
-                review.innerHTML = `${nameInput.value}` + ' ' + `${placeInput.value}`  + ' ' + `${commentInput.value}`;
-                reviews.append(review);
+            window.addEventListener('click', event => {
+                if (event.target.className === 'addButton') {
+                    var nameInput = document.querySelector('.name');
+                    var placeInput = document.querySelector('.place');
+                    var commentInput = document.querySelector('.comment');                    
+                    var reviews = document.querySelector('.reviews');
+                    var review = document.createElement('div');
+                    review.classList.add = 'review';
+                    review.innerHTML = `${nameInput.value}` + ' ' + `${placeInput.value}`  + ' ' + `${commentInput.value}`;
+                    coords.review += [review.innerText];
+                    reviews.append(coords.review);
+                    nameInput.value = '';
+                    placeInput.value = '';
+                    commentInput.value = '';
+                    //myMap.balloon.close();
+                    console.log('click');
+                    console.log(coords);
+                }
             });
             dataStorage = JSON.stringify(coords);
             console.log('Добавляем координаты ', dataStorage);
