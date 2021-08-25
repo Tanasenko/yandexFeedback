@@ -6,7 +6,11 @@ ymaps.ready(init);
             controls: []
         });
 
-        var coords = {};
+        var coords = {
+            //coord: {},
+           // review: []            
+        };
+        
         var dataStorage = localStorage.data;
         var myBallon = {
             balloonContent: [
@@ -26,28 +30,31 @@ ymaps.ready(init);
 
         myMap.events.add('click', function(e) {
             var coord = e.get('coords');
-            coords.coord += [coord];
+            //coords.coord[coord];
             myMap.geoObjects.add(new ymaps.Placemark((coord), myBallon));
+           
             window.addEventListener('click', event => {
                 if (event.target.className === 'addButton') {
                     var nameInput = document.querySelector('.name');
                     var placeInput = document.querySelector('.place');
                     var commentInput = document.querySelector('.comment');                    
                     var reviews = document.querySelector('.reviews');
+                    
                     var review = document.createElement('div');
                     review.classList.add = 'review';
-                    review.innerHTML = `${nameInput.value}` + ' ' + `${placeInput.value}`  + ' ' + `${commentInput.value}`;
-                    coords.review += [review.innerText];
-                    reviews.append(coords.review);
+                    review.innerHTML = `${nameInput.value}` + ' ' + `${placeInput.value}`  + ': ' + `${commentInput.value}`;
+                    //coords.coord.review.push(review.innerText);
+                    reviews.append(review.innerText);
                     nameInput.value = '';
                     placeInput.value = '';
                     commentInput.value = '';
+                    coords[`${e.get('coords')}`] = new Array;
+                    coords[`${e.get('coords')}`].push(`${review.innerText}`);
                     //myMap.balloon.close();
-                    console.log('click');
                     console.log(coords);
                 }
             });
-            dataStorage = JSON.stringify(coords);
+            //  dataStorage = JSON.stringify(coords);
             console.log('Добавляем координаты ', dataStorage);
         })
 

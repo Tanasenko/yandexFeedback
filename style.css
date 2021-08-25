@@ -1,48 +1,48 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.balloon{
-    display: flex;
-    flex-direction: column;
-    max-width: 353px;
-    min-height: 150px;
-    padding-bottom: 5px;
+.balloon {
+  display: flex;
+  flex-direction: column;
+  max-width: 353px;
+  min-height: 150px;
+  padding-bottom: 5px;
 }
 
-.reviews{
-    display: flex;
-    flex-direction: column;
+.reviews {
+  display: flex;
+  flex-direction: column;
 }
 
-.review{
-    margin-bottom: 20px;
-    
+.review {
+  margin-bottom: 20px;
 }
 
-.title{
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    margin-top: 29px;
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  margin-top: 29px;
 }
 
 input {
-    margin-bottom: 10px;
-    height: 38px;
-    width: 310px;
-    border: 1px solid #CFCFCF
+  margin-bottom: 10px;
+  height: 38px;
+  width: 310px;
+  border: 1px solid #cfcfcf;
 }
 
-.addButton{
-    width: 107px;
-    height: 38px;
-    background-color: #FF8663;
-    color: #fff;
-    font-size: 14px;
-    border-radius: 3px;
-    border: 1px solid transparent;
-    margin-top: 9px;
+.addButton {
+  width: 107px;
+  height: 38px;
+  background-color: #ff8663;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  margin-top: 9px;
 }
