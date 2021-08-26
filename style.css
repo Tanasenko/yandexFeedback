@@ -18,15 +18,11 @@ body {
   flex-direction: column;
 }
 
-.review {
-  margin-bottom: 20px;
-}
-
 .title {
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 20px;
-  margin-top: 29px;
+  margin-bottom: 10px;
+  margin-top: 5px;
 }
 
 input {
@@ -44,5 +40,4 @@ input {
   font-size: 14px;
   border-radius: 3px;
   border: 1px solid transparent;
-  margin-top: 9px;
 }
