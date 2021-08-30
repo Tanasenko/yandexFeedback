@@ -7,8 +7,6 @@ ymaps.ready(init);
         });
 
         var coords = {};
-        
-        //var dataStorage = localStorage.data;
         var myBallon = {
             balloonContent: [
                 '<div class="balloon">',
@@ -21,13 +19,14 @@ ymaps.ready(init);
                 '</div>'
             ].join('')
         };
-
         var addButton = document.querySelector('.addButton');
+        
 
-
+        
         myMap.events.add('click', function(e) {
             var coord = e.get('coords');
-            myMap.geoObjects.add(new ymaps.Placemark((coord), myBallon));
+            var myPlacemark = new ymaps.Placemark((coord), myBallon);
+            myMap.geoObjects.add(myPlacemark);
            
             window.addEventListener('click', event => {
                 if (event.target.className === 'addButton') {
@@ -35,11 +34,9 @@ ymaps.ready(init);
                     var placeInput = document.querySelector('.place');
                     var commentInput = document.querySelector('.comment');                    
                     var reviews = document.querySelector('.reviews');
-                    
                     var review = document.createElement('div');
                     review.className = 'review';
                     review.innerHTML = `${nameInput.value}` + ' ' + `${placeInput.value}`  + ': ' + `${commentInput.value}`;
-                    //coords.coord.review.push(review.innerText);
                     reviews.appendChild(review);
                     nameInput.value = '';
                     placeInput.value = '';
@@ -49,24 +46,40 @@ ymaps.ready(init);
                         coords[`${e.get('coords')}`].push(`${review.innerHTML}`);
                     } else {
                         coords[`${e.get('coords')}`].push(`${review.innerText}`);
-                    }
-                    //myMap.balloon.close();
+                    }                    
                     console.log(coords);
-                    console.log(localStorage.dataStorage);
                     localStorage.setItem('dataStorage', JSON.stringify(coords));
+                    //myMap.balloon.close();
+                    console.log(localStorage.dataStorage);
                 }
-            });
-            
-        })
-        var dataCoords = JSON.parse(localStorage.getItem('dataStorage'));
-        //var dataCoords = {55.77103285527656,37.6513296508789: [ : ]};
-        
+            });            
+        })        
 
         //загрузка точек из localStorage
-        myMap.events.add('load', function(e){
-            for(var key in dataCoords){
-                var value = dataCoords[key];
-                yMap.geoObjects.add(new ymaps.Placemark((key), myBallon));
-            }
-        })
+        var dataCoords = JSON.parse(localStorage.getItem('dataStorage'));
+        for(var key in dataCoords){
+            var keyValue = dataCoords[key];
+            console.log(`${keyValue}`);
+            myMap.geoObjects.add(new ymaps.Placemark((key.split(',')), myBallon));
+            console.log(key);
+            
+            myMap.geoObjects.events.add('click', function (e) {
+                const placeMark = e.get('target');
+                var coord = e.get('coords');
+                placeMark.events.add('balloonopen', (event) => {
+                        if (key === coord) {
+                            for (let i = 0; i < keyValue.length; i++) {
+                                const reviewValue = keyValue[i];
+                                var reviews = document.querySelector('.reviews');
+                                var review = document.createElement('div');
+                                review.className = 'review';
+                                review.innerHTML = reviewValue;
+                                reviews.appendChild(review);
+                            }
+                        }                       
+                    
+                })                 
+            })   
+        }
+        
     }
