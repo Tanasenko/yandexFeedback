@@ -20,13 +20,14 @@ ymaps.ready(init);
             ].join('')
         };
         var addButton = document.querySelector('.addButton');
-        
+        var myPlacemark;    
 
         
         myMap.events.add('click', function(e) {
             var coord = e.get('coords');
-            var myPlacemark = new ymaps.Placemark((coord), myBallon);
+            myPlacemark = new ymaps.Placemark((coord), myBallon);
             myMap.geoObjects.add(myPlacemark);
+            //getAddress(coord);
            
             window.addEventListener('click', event => {
                 if (event.target.className === 'addButton') {
@@ -41,12 +42,12 @@ ymaps.ready(init);
                     nameInput.value = '';
                     placeInput.value = '';
                     commentInput.value = '';
-                    if (!coords[`${e.get('coords')}`]) {
-                        coords[`${e.get('coords')}`] = new Array;
-                        coords[`${e.get('coords')}`].push(`${review.innerHTML}`);
+                    if (!coords[`${getAddress(e.get('coords'))}`]) {
+                        coords[`${getAddress(e.get('coords'))}`] = new Array;
+                        coords[`${getAddress(e.get('coords'))}`].push(`${review.innerHTML}`);
                     } else {
-                        coords[`${e.get('coords')}`].push(`${review.innerText}`);
-                    }                    
+                        coords[`${getAddress(e.get('coords'))}`].push(`${review.innerText}`);
+                    }                  
                     console.log(coords);
                     localStorage.setItem('dataStorage', JSON.stringify(coords));
                     //myMap.balloon.close();
@@ -59,27 +60,73 @@ ymaps.ready(init);
         var dataCoords = JSON.parse(localStorage.getItem('dataStorage'));
         for(var key in dataCoords){
             var keyValue = dataCoords[key];
-            console.log(`${keyValue}`);
             myMap.geoObjects.add(new ymaps.Placemark((key.split(',')), myBallon));
-            console.log(key);
-            
-            myMap.geoObjects.events.add('click', function (e) {
-                const placeMark = e.get('target');
-                var coord = e.get('coords');
-                placeMark.events.add('balloonopen', (event) => {
-                        if (key === coord) {
-                            for (let i = 0; i < keyValue.length; i++) {
-                                const reviewValue = keyValue[i];
-                                var reviews = document.querySelector('.reviews');
-                                var review = document.createElement('div');
-                                review.className = 'review';
-                                review.innerHTML = reviewValue;
-                                reviews.appendChild(review);
-                            }
-                        }                       
-                    
-                })                 
-            })   
         }
+            
+        myMap.geoObjects.events.add('click', function (e) {
+            const placeMark = e.get('target');
+            var coord = e.get('coords').join(',');
+            placeMark.events.add('balloonopen', (event) => {
+                var coords = Object.keys(dataCoords)
+                for (let i = 0; i < coords.length; i++) {
+                    console.log(coords[i]);
+                    console.log(coord);
+                    if (coords[i] === coord) {
+                        console.log('сработало');
+                        for (let i = 0; i < keyValue.length; i++) {
+                            const reviewValue = keyValue[i];
+                            var reviews = document.querySelector('.reviews');
+                            var review = document.createElement('div');
+                            review.className = 'review';
+                            review.innerHTML = reviewValue;
+                            reviews.appendChild(review);
+                        }
+                    }
+                }
+                                     
+            })   
+        })   
+
+        function getAddress(coord) {
+            myPlacemark.properties.set('iconCaption', 'поиск...');
+            ymaps.geocode(coord).then(function (res) {
+                var firstGeoObject = res.geoObjects.get(0);
+
+                myPlacemark.properties
+                    .set({
+                        // Формируем строку с данными об объекте.
+                        iconCaption: [
+                            // Название населенного пункта или вышестоящее административно-территориальное образование.
+                            firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
+                            // Получаем путь до топонима, если метод вернул null, запрашиваем наименование здания.
+                            firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+                        ].filter(Boolean).join(', '),
+                        // В качестве контента балуна задаем строку с адресом объекта.
+                        balloonContentHeader: firstGeoObject.getAddressLine()
+                    });
+                    console.log(firstGeoObject.getAddressLine());
+                    
+            });
+        }
+
+
+        // Создание кластера.
+        /*const clusterer = new ymaps.Clusterer({
+            preset: "islands#invertedNightClusterIcons",
+            groupByCoordinates: false,
+            clusterDisableClickZoom: true,
+            clusterHideIconOnBalloonOpen: false,
+            geoObjectHideIconOnBalloonOpen: false,
+            clusterOpenBalloonOnClick: true,
+            clusterBalloonContentLayout: "cluster#balloonCarousel",
+            clusterBalloonPanelMaxMapArea: 0,
+            clusterBalloonContentLayoutWidth: 200,
+            clusterBalloonContentLayoutHeight: 250,
+            clusterBalloonPagerSize: 10,
+            clusterBalloonPagerType: "marker"
+        });
+
+        clusterer.add(allPlacemarks);
+        myMap.geoObjects.add(clusterer);*/
         
     }
