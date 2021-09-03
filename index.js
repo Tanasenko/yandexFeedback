@@ -7,6 +7,7 @@ ymaps.ready(init);
         });
 
         var coords = {};
+        var points = []
         var myBallon = {
             balloonContent: [
                 '<div class="balloon">',
@@ -27,6 +28,10 @@ ymaps.ready(init);
             var coord = e.get('coords');
             myPlacemark = new ymaps.Placemark((coord), myBallon);
             myMap.geoObjects.add(myPlacemark);
+
+            points.push(coord);
+            console.log(points);
+            getClasterer();
            
             window.addEventListener('click', async event => {
                 if (event.target.className === 'addButton') {
@@ -42,7 +47,7 @@ ymaps.ready(init);
                     placeInput.value = '';
                     commentInput.value = '';
                     //async function fn() {
-                        const address = await getAddress()
+                        const address = await getAddress(coord)
                         //getAddress(coord);
                         console.log(coords);
                         if (!coords[`${address}`]) {
@@ -52,7 +57,9 @@ ymaps.ready(init);
                             coords[`${address}`].push(`${review.innerText}`);
                         }     
                     //}
-                    //fn()                                
+                    //fn()   
+                    
+ 
                     console.log(coords);
                     localStorage.setItem('dataStorage', JSON.stringify(coords));
                     //myMap.balloon.close();
@@ -92,6 +99,7 @@ ymaps.ready(init);
             })   
         })   
 
+        //Получаем адрес по координатам
         function getAddress(coord) {
             myPlacemark.properties.set('iconCaption', 'поиск...');
             ymaps.geocode(coord).then(function (res) {
@@ -110,8 +118,50 @@ ymaps.ready(init);
                         // В качестве контента балуна задаем строку с адресом объекта.
                         balloonContentHeader: firstGeoObject.getAddressLine()
                     });
-            });
 
-            return res.geoObjects.get(0).properties.get('name');
+                return res.geoObjects.get(0).properties.get('name');
+            });
         }
-    }
+
+        //Кластеризация
+        var clusterer = new ymaps.Clusterer({
+            preset: 'islands#invertedVioletClusterIcons',
+            groupByCoordinates: true,
+            clusterDisableClickZoom: true,
+            clusterHideIconOnBalloonOpen: false,
+            geoObjectHideIconOnBalloonOpen: false
+        });
+
+        var getPointData = function (index) {
+            return {
+                balloonContent: [
+                '<div class="balloon">',
+                    '<div class="reviews"></div>',
+                    '<div class="title">Отзыв:</div>',
+                    '<input class="name" placeholder="Укажите ваше имя">',
+                    '<input class="place" placeholder="Укажите место">',
+                    '<textarea class="comment" placeholder="Оставить отзыв"></textarea>',
+                    '<button class="addButton">Добавить</button>',
+                '</div>'].join(''),
+                clusterCaption: 'отзыв <strong>' + index + '</strong>'
+            };
+        };
+
+        getPointOptions = function () {
+            return {
+                preset: 'islands#violetIcon'
+            };
+        };
+
+        
+
+        function getClasterer(){
+            geoObjects = [];
+            for(var i = 0, len = points.length; i < len; i++) {
+                geoObjects[i] = new ymaps.Placemark(points[i], getPointData(i), getPointOptions());
+            } 
+            clusterer.add(geoObjects);
+            myMap.geoObjects.add(clusterer);
+        }
+               console.log(points);
+    };
