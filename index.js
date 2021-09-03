@@ -27,9 +27,8 @@ ymaps.ready(init);
             var coord = e.get('coords');
             myPlacemark = new ymaps.Placemark((coord), myBallon);
             myMap.geoObjects.add(myPlacemark);
-            //getAddress(coord);
            
-            window.addEventListener('click', event => {
+            window.addEventListener('click', async event => {
                 if (event.target.className === 'addButton') {
                     var nameInput = document.querySelector('.name');
                     var placeInput = document.querySelector('.place');
@@ -42,12 +41,18 @@ ymaps.ready(init);
                     nameInput.value = '';
                     placeInput.value = '';
                     commentInput.value = '';
-                    if (!coords[`${getAddress(e.get('coords'))}`]) {
-                        coords[`${getAddress(e.get('coords'))}`] = new Array;
-                        coords[`${getAddress(e.get('coords'))}`].push(`${review.innerHTML}`);
-                    } else {
-                        coords[`${getAddress(e.get('coords'))}`].push(`${review.innerText}`);
-                    }                  
+                    //async function fn() {
+                        const address = await getAddress()
+                        //getAddress(coord);
+                        console.log(coords);
+                        if (!coords[`${address}`]) {
+                            coords[`${address}`] = new Array;
+                            coords[`${address}`].push(`${review.innerHTML}`);
+                        } else {
+                            coords[`${address}`].push(`${review.innerText}`);
+                        }     
+                    //}
+                    //fn()                                
                     console.log(coords);
                     localStorage.setItem('dataStorage', JSON.stringify(coords));
                     //myMap.balloon.close();
@@ -91,6 +96,7 @@ ymaps.ready(init);
             myPlacemark.properties.set('iconCaption', 'поиск...');
             ymaps.geocode(coord).then(function (res) {
                 var firstGeoObject = res.geoObjects.get(0);
+                
 
                 myPlacemark.properties
                     .set({
@@ -104,29 +110,8 @@ ymaps.ready(init);
                         // В качестве контента балуна задаем строку с адресом объекта.
                         balloonContentHeader: firstGeoObject.getAddressLine()
                     });
-                    console.log(firstGeoObject.getAddressLine());
-                    
             });
+
+            return res.geoObjects.get(0).properties.get('name');
         }
-
-
-        // Создание кластера.
-        /*const clusterer = new ymaps.Clusterer({
-            preset: "islands#invertedNightClusterIcons",
-            groupByCoordinates: false,
-            clusterDisableClickZoom: true,
-            clusterHideIconOnBalloonOpen: false,
-            geoObjectHideIconOnBalloonOpen: false,
-            clusterOpenBalloonOnClick: true,
-            clusterBalloonContentLayout: "cluster#balloonCarousel",
-            clusterBalloonPanelMaxMapArea: 0,
-            clusterBalloonContentLayoutWidth: 200,
-            clusterBalloonContentLayoutHeight: 250,
-            clusterBalloonPagerSize: 10,
-            clusterBalloonPagerType: "marker"
-        });
-
-        clusterer.add(allPlacemarks);
-        myMap.geoObjects.add(clusterer);*/
-        
     }
